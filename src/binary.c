@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "binary.h"
-#include "crc32.h"
 
 uint8_t read_byte(uint8_t **src) {
 	return *((*src)++);

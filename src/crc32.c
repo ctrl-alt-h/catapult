@@ -3,7 +3,7 @@
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
-#include "crc32.h"
+#include "binary.h"
 
 #ifdef CRC32_FAST
 static const unsigned int crc_table[256] = {

@@ -19,9 +19,6 @@ struct pul_file* read_file(uint8_t **buffer) {
 		_read_track_entry(&file->t_arr[i], buffer);
 	}
 
-	file->alphabet_table = (uint16_t*)malloc(sizeof(uint16_t) * n_tracks);
-	for (int i = 0; i < n_tracks; ++i)
-
 	return file;
 }
 
