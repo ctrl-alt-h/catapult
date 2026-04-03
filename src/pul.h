@@ -7,13 +7,15 @@
 #define INFO_MAGIC 0x494E464F
 #define CUPS_MAGIC 0x43555053
 
+#define MOD_NAME_MAX 16
+
 struct file_header {
 	uint32_t magic;
 	uint32_t version;
 	uint32_t info_offset;
 	uint32_t cups_offset;
 	uint32_t bmg_offset;
-	char mod_folder_name[16];
+	char mod_folder_name[MOD_NAME_MAX];
 };
 
 struct info_header {
