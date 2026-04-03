@@ -16,7 +16,7 @@ static void _read_file_header(struct file_header *hdr, uint8_t **buffer) {
 	hdr->info_offset 	= read_be_uint32(buffer);
 	hdr->cups_offset 	= read_be_uint32(buffer);
 	hdr->bmg_offset 	= read_be_uint32(buffer);
-	read_string(buffer, hdr->mod_folder_name, 16);
+	read_bytes(buffer, (uint8_t*)hdr->mod_folder_name, 16);
 }
 
 static void _read_file_info(struct info_header *hdr, struct info_fields *fld, uint8_t **buffer) {

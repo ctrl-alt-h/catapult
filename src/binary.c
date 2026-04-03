@@ -7,12 +7,6 @@ uint8_t read_byte(uint8_t **src) {
 	return *((*src)++);
 }
 
-void read_string(uint8_t **src, char *dest, size_t n) {
-	for (size_t i = 0; i < n; ++i) {
-		dest[i] = read_byte(src);
-	}
-}
-
 void read_bytes(uint8_t **src, uint8_t *dest, size_t n) {
 	for (size_t i = 0; i < n; ++i) {
 		dest[i] = read_byte(src);
