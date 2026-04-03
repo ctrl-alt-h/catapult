@@ -66,12 +66,6 @@ struct pul_file {
 };
 
 struct pul_file* read_file(uint8_t **buffer);
-void _read_file_header(struct file_header *hdr, uint8_t **buffer);
-void _read_file_info(struct info_header *hdr, struct info_fields *fld, uint8_t **buffer);
-void _read_cups_header(struct cups_header *hdr, uint8_t **buffer);
-void _read_track_entry(struct track_entry *track, uint8_t **buffer);
-
 void print_file(const struct pul_file file);
-void _print_track_entry(const struct track_entry track, const int index);
 
 #endif

@@ -4,25 +4,7 @@
 #include "pul.h"
 #include "binary.h"
 
-struct pul_file* read_file(uint8_t **buffer) {
-	struct pul_file *file = (struct pul_file*)malloc(sizeof(struct pul_file));
-
-	_read_file_header(&file->f_hdr, buffer);
-	_read_file_info(&file->i_hdr, &file->i_fld, buffer);
-	_read_cups_header(&file->c_hdr, buffer);
-
-	int n_cups = file->c_hdr.n_ct_cups;
-	int n_tracks = 4 * (n_cups + (n_cups % 2));
-
-	file->t_arr = (struct track_entry*)malloc(sizeof(struct track_entry) * n_tracks);
-	for (int i = 0; i < n_tracks; ++i) {
-		_read_track_entry(&file->t_arr[i], buffer);
-	}
-
-	return file;
-}
-
-void _read_file_header(struct file_header *hdr, uint8_t **buffer) {
+static void _read_file_header(struct file_header *hdr, uint8_t **buffer) {
 	hdr->magic 		= read_be_uint32(buffer);
 
 	if (hdr->magic != FILE_MAGIC) {
@@ -37,7 +19,7 @@ void _read_file_header(struct file_header *hdr, uint8_t **buffer) {
 	read_string(buffer, hdr->mod_folder_name, 16);
 }
 
-void _read_file_info(struct info_header *hdr, struct info_fields *fld, uint8_t **buffer) {
+static void _read_file_info(struct info_header *hdr, struct info_fields *fld, uint8_t **buffer) {
 	hdr->magic = read_be_uint32(buffer);
 
 	if (hdr->magic != INFO_MAGIC) {
@@ -64,7 +46,7 @@ void _read_file_info(struct info_header *hdr, struct info_fields *fld, uint8_t *
 	read_bytes(buffer, fld->padding, 40);
 }
 
-void _read_cups_header(struct cups_header *hdr, uint8_t **buffer) {
+static void _read_cups_header(struct cups_header *hdr, uint8_t **buffer) {
 	hdr->magic = read_be_uint32(buffer);
 
 	if (hdr->magic != CUPS_MAGIC) {
@@ -87,11 +69,38 @@ void _read_cups_header(struct cups_header *hdr, uint8_t **buffer) {
 	hdr->n_variants = read_be_uint32(buffer);
 }
 
-void _read_track_entry(struct track_entry *track, uint8_t **buffer) {
+static void _read_track_entry(struct track_entry *track, uint8_t **buffer) {
 	track->track_slot 	= read_byte(buffer);
 	track->music_slot 	= read_byte(buffer);
 	track->n_variants 	= read_be_uint16(buffer);
 	track->crc32 		= read_be_uint32(buffer);
+}
+
+struct pul_file* read_file(uint8_t **buffer) {
+	struct pul_file *file = (struct pul_file*)malloc(sizeof(struct pul_file));
+
+	_read_file_header(&file->f_hdr, buffer);
+	_read_file_info(&file->i_hdr, &file->i_fld, buffer);
+	_read_cups_header(&file->c_hdr, buffer);
+
+	int n_cups = file->c_hdr.n_ct_cups;
+	int n_tracks = 4 * (n_cups + (n_cups % 2));
+
+	file->t_arr = (struct track_entry*)malloc(sizeof(struct track_entry) * n_tracks);
+	for (int i = 0; i < n_tracks; ++i) {
+		_read_track_entry(&file->t_arr[i], buffer);
+	}
+
+	return file;
+}
+
+static void _print_track_entry(const struct track_entry track, const int index) {
+	printf("TRACK ENTRY %d\n", index);
+	printf("------------\n");
+	printf("Track slot:\t%d\n", track.track_slot);
+	printf("Music slot:\t%d\n", track.music_slot);
+	printf("Variant count:\t%d\n", track.n_variants);
+	printf("CRC32:\t\t%u\n\n", track.crc32);
 }
 
 void print_file(const struct pul_file file) {
@@ -144,13 +153,4 @@ void print_file(const struct pul_file file) {
 	for (int i = 0; i < n_tracks; ++i) {
 		_print_track_entry(file.t_arr[i], i);
 	}
-}
-
-void _print_track_entry(const struct track_entry track, const int index) {
-	printf("TRACK ENTRY %d\n", index);
-	printf("------------\n");
-	printf("Track slot:\t%d\n", track.track_slot);
-	printf("Music slot:\t%d\n", track.music_slot);
-	printf("Variant count:\t%d\n", track.n_variants);
-	printf("CRC32:\t\t%u\n\n", track.crc32);
 }
