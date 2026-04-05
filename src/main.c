@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	if (fread(buffer, 1, f_size, fp) <= 0) {
+	if (fread(buffer, 1, f_size, fp) != f_size) {
 		fprintf(stderr, "Read 0 bytes. Something is wrong.\n");
 		return 1;
 	}
@@ -36,7 +36,11 @@ int main(int argc, char **argv) {
 	printf("memory successfully read into mem\n");
 
 	struct pul_file file;
-	read_file(&file, &buffer);
+	uint8_t *current_ptr = buffer;
+
+	read_file(&file, &current_ptr);
+	free(buffer);
+
 	print_file(file);
 
 	if (argc == 3) {

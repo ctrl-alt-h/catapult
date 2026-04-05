@@ -41,7 +41,7 @@ uint32_t crc32_from_file(const char *filename) {
 	fseek(file, 0, SEEK_SET);
 
 	buffer = (unsigned char*)malloc(sizeof(unsigned char) * size);
-	if (fread(buffer, 1, size, file) <= 0 ) {
+	if (fread(buffer, 1, size, file) != size) {
 		fprintf(stderr, "Failed to read file in the crc32 function\n");
 		return 0;
 	}
