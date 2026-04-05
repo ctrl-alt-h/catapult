@@ -76,9 +76,7 @@ static void _read_track_entry(struct track_entry *track, uint8_t **buffer) {
 	track->crc32 		= read_be_uint32(buffer);
 }
 
-struct pul_file* read_file(uint8_t **buffer) {
-	struct pul_file *file = (struct pul_file*)malloc(sizeof(struct pul_file));
-
+void read_file(struct pul_file *file, uint8_t **buffer) {
 	_read_file_header(&file->f_hdr, buffer);
 	_read_file_info(&file->i_hdr, &file->i_fld, buffer);
 	_read_cups_header(&file->c_hdr, buffer);
@@ -91,7 +89,10 @@ struct pul_file* read_file(uint8_t **buffer) {
 		_read_track_entry(&file->t_arr[i], buffer);
 	}
 
-	return file;
+	file->alphabet_table = (uint16_t*)malloc(sizeof(uint16_t) * n_tracks);
+	for (int i = 0; i < n_tracks; ++i) {
+		file->alphabet_table[i] = read_be_uint16(buffer);
+	}
 }
 
 static void _print_track_entry(const struct track_entry track, const int index) {
@@ -152,5 +153,9 @@ void print_file(const struct pul_file file) {
 
 	for (int i = 0; i < n_tracks; ++i) {
 		_print_track_entry(file.t_arr[i], i);
+	}
+
+	for (int i = 0; i < n_tracks; ++i) {
+		printf("%d\n", file.alphabet_table[i]);
 	}
 }

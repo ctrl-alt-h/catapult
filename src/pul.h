@@ -67,7 +67,7 @@ struct pul_file {
 	uint16_t *alphabet_table;
 };
 
-struct pul_file* read_file(uint8_t **buffer);
+void read_file(struct pul_file *file, uint8_t **buffer);
 void print_file(const struct pul_file file);
 
 #endif

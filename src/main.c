@@ -35,8 +35,9 @@ int main(int argc, char **argv) {
 	printf("file length: %zu\n", f_size);
 	printf("memory successfully read into mem\n");
 
-	struct pul_file *file = read_file(&buffer);
-	print_file(*file);
+	struct pul_file file;
+	read_file(&file, &buffer);
+	print_file(file);
 
 	if (argc == 3) {
 		uint32_t test_crc = crc32_from_file(argv[2]);
