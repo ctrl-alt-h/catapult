@@ -47,6 +47,8 @@ uint32_t crc32_from_file(const char *filename) {
 	}
 
 	result = crc32(buffer, (unsigned int)size);
+	
+	free(buffer);
 	fclose(file);
 	return result;
 }
