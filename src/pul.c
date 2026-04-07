@@ -147,7 +147,9 @@ void print_file(const struct pul_file file) {
 	printf("Trophy count 3:\t%d\n", file.c_hdr.n_trophies[2]);
 	printf("Trophy count 4:\t%d\n", file.c_hdr.n_trophies[3]);
 	printf("Variant count:\t%d\n\n", file.c_hdr.n_variants);
+}
 
+void print_track_entries(const struct pul_file file) {
 	int n_cups = file.c_hdr.n_ct_cups;
 	int n_tracks = 4 * (n_cups + (n_cups % 2));
 
@@ -174,9 +176,37 @@ void export_bmg(const struct pul_file file, const uint8_t *buffer) {
 		return;
 	}
 
-	size_t f_size = read_be_uint32(buffer, &offset);	
+	size_t f_size = read_be_uint32(buffer, &offset);
 
 	FILE *fp = fopen("./config.bmg", "wb");
 	fwrite(&buffer[start], 1, f_size, fp);
+	fclose(fp);
+}
+
+void export_txt(const struct pul_file file, const uint8_t *buffer, const size_t size) {
+	int start = file.f_hdr.bmg_offset;
+	int offset = start;
+
+	if (read_be_uint32(buffer, &offset) != BMG_MAGIC_1) {
+		fprintf(stderr, "BMG magic invalid: export txt\n");
+		return;
+	}
+
+	if (read_be_uint32(buffer, &offset) != BMG_MAGIC_2) {
+		fprintf(stderr, "BMG magic invalid: export txt\n");
+		return;
+	}
+
+	size_t f_size = read_be_uint32(buffer, &offset);
+	offset = start + f_size; // start immediately after bmg
+
+	if (read_be_uint32(buffer, &offset) != TEXT_MAGIC) {
+		fprintf(stderr, "FILE magic invalid\n");
+		return;
+	}
+
+	offset = start + f_size;
+	FILE *fp = fopen("./filenames.txt", "wb");
+	fwrite(&buffer[offset], 1, size - offset, fp);
 	fclose(fp);
 }

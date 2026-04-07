@@ -6,9 +6,9 @@
 #define FILE_MAGIC 0x50554C53
 #define INFO_MAGIC 0x494E464F
 #define CUPS_MAGIC 0x43555053
-
 #define BMG_MAGIC_1 0x4D455347
 #define BMG_MAGIC_2 0x626D6731
+#define TEXT_MAGIC 0x46494C45
 
 #define MOD_NAME_MAX 16
 
@@ -71,7 +71,11 @@ struct pul_file {
 };
 
 void read_file(struct pul_file *file, const uint8_t *buffer, int *offset);
+
 void print_file(const struct pul_file file);
+void print_track_entries(const struct pul_file file);
+
 void export_bmg(const struct pul_file file, const uint8_t *buffer);
+void export_txt(const struct pul_file file, const uint8_t *buffer, const size_t size);
 
 #endif
