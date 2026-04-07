@@ -26,9 +26,6 @@ int main(int argc, char **argv) {
 	free(buffer);
 
 	print_file(file);
-
-	// write_file(file, "./out.pul", "./out.bmg", "./out.txt");
-	// print_track_entries(file);
 #endif
 
 	return 0;
