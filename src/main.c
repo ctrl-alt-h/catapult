@@ -26,6 +26,8 @@ int main(int argc, char **argv) {
 	free(buffer);
 
 	print_file(file);
+
+	// hello
 #endif
 
 	return 0;
