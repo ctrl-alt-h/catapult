@@ -12,7 +12,7 @@
 
 #define MOD_NAME_MAX 16
 
-struct file_header {
+struct __attribute__((__packed__)) file_header {
 	uint32_t magic;
 	uint32_t version;
 	uint32_t info_offset;
@@ -21,13 +21,13 @@ struct file_header {
 	char mod_folder_name[MOD_NAME_MAX];
 };
 
-struct info_header {
+struct __attribute__((__packed__)) info_header {
 	uint32_t magic;
 	uint32_t version;
 	uint32_t size;
 };
 
-struct info_fields {
+struct __attribute__((__packed__)) info_fields {
 	uint32_t room_key;
 	uint32_t prob_100cc;
 	uint32_t prob_150cc;
@@ -43,7 +43,7 @@ struct info_fields {
 	uint8_t padding[40];
 };
 
-struct cups_header {
+struct __attribute__((__packed__)) cups_header {
 	uint32_t magic;
 	uint32_t version;
 	uint32_t size;
@@ -54,7 +54,7 @@ struct cups_header {
 	uint32_t n_variants;
 };
 
-struct track_entry {
+struct __attribute__((__packed__)) track_entry {
 	uint8_t track_slot;
 	uint8_t music_slot;
 	uint16_t n_variants;
@@ -71,6 +71,7 @@ struct pul_file {
 };
 
 void read_file(struct pul_file *file, const uint8_t *buffer, int *offset);
+void write_file(const struct pul_file file, const char *filename);
 
 void print_file(const struct pul_file file);
 void print_track_entries(const struct pul_file file);

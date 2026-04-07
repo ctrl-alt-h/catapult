@@ -210,3 +210,6 @@ void export_txt(const struct pul_file file, const uint8_t *buffer, const size_t 
 	fwrite(&buffer[offset], 1, size - offset, fp);
 	fclose(fp);
 }
+
+void write_file(const struct pul_file file, const char *filename) {
+}
