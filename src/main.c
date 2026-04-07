@@ -5,9 +5,9 @@
 #include "binary.h"
 
 int main(int argc, char **argv) {
-	FILE 	*fp;
-	size_t 	f_size;
-	uint8_t *buffer;
+	FILE 	*fp = NULL;
+	size_t 	f_size = 0;
+	uint8_t *buffer = NULL;
 
 	if (argc < 2) {
 		fprintf(stderr, "Usage: catapult /path/to/config.pul\n");
@@ -36,9 +36,11 @@ int main(int argc, char **argv) {
 	printf("memory successfully read into mem\n");
 
 	struct pul_file file;
-	uint8_t *current_ptr = buffer;
+	int 	offset = 0;
 
-	read_file(&file, &current_ptr);
+	read_file(&file, buffer, &offset);
+	export_bmg(file, buffer);
+
 	free(buffer);
 
 	print_file(file);

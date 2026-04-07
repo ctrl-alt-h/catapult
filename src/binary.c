@@ -3,25 +3,25 @@
 #include <stdlib.h>
 #include "binary.h"
 
-uint8_t read_byte(uint8_t **src) {
-	return *((*src)++);
+uint8_t read_byte(const uint8_t *src, int *offset) {
+	return src[(*offset)++];
 }
 
-void read_bytes(uint8_t **src, uint8_t *dest, size_t n) {
+void read_bytes(const uint8_t *src, int *offset, uint8_t *dest, size_t n) {
 	for (size_t i = 0; i < n; ++i) {
-		dest[i] = read_byte(src);
+		dest[i] = read_byte(src, offset);
 	}
 }
 
-uint16_t read_be_uint16(uint8_t **src) {
-	return read_byte(src) << 8 | read_byte(src);
+uint16_t read_be_uint16(const uint8_t *src, int *offset) {
+	return read_byte(src, offset) << 8 | read_byte(src, offset);
 }
 
-uint32_t read_be_uint32(uint8_t **src) {
-	return read_byte(src) << 24 |
-	       read_byte(src) << 16 |
-	       read_byte(src) << 8 |
-	       read_byte(src);
+uint32_t read_be_uint32(const uint8_t *src, int *offset) {
+	return read_byte(src, offset) << 24 |
+	       read_byte(src, offset) << 16 |
+	       read_byte(src, offset) << 8 |
+	       read_byte(src, offset);
 }
 
 uint32_t crc32_from_file(const char *filename) {

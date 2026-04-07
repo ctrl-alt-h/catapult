@@ -4,94 +4,94 @@
 #include "pul.h"
 #include "binary.h"
 
-static void _read_file_header(struct file_header *hdr, uint8_t **buffer) {
-	hdr->magic 		= read_be_uint32(buffer);
+static void _read_file_header(struct file_header *hdr, const uint8_t *buffer, int *offset) {
+	hdr->magic 		= read_be_uint32(buffer, offset);
 
 	if (hdr->magic != FILE_MAGIC) {
 		fprintf(stderr, "Invalid data: PULS\n");
 		return;
 	}
 
-	hdr->version 		= read_be_uint32(buffer);
-	hdr->info_offset 	= read_be_uint32(buffer);
-	hdr->cups_offset 	= read_be_uint32(buffer);
-	hdr->bmg_offset 	= read_be_uint32(buffer);
-	read_bytes(buffer, (uint8_t*)hdr->mod_folder_name, MOD_NAME_MAX);
+	hdr->version 		= read_be_uint32(buffer, offset);
+	hdr->info_offset 	= read_be_uint32(buffer, offset);
+	hdr->cups_offset 	= read_be_uint32(buffer, offset);
+	hdr->bmg_offset 	= read_be_uint32(buffer, offset);
+	read_bytes(buffer, offset, (uint8_t*)hdr->mod_folder_name, MOD_NAME_MAX);
 }
 
-static void _read_file_info(struct info_header *hdr, struct info_fields *fld, uint8_t **buffer) {
-	hdr->magic = read_be_uint32(buffer);
+static void _read_file_info(struct info_header *hdr, struct info_fields *fld, const uint8_t *buffer, int *offset) {
+	hdr->magic = read_be_uint32(buffer, offset);
 
 	if (hdr->magic != INFO_MAGIC) {
 		fprintf(stderr, "Invalid data: INFO\n");
 		return;
 	}
 
-	hdr->version 	= read_be_uint32(buffer);
-	hdr->size 	= read_be_uint32(buffer);
+	hdr->version 	= read_be_uint32(buffer, offset);
+	hdr->size 	= read_be_uint32(buffer, offset);
 
-	fld->room_key 		= read_be_uint32(buffer);
-	fld->prob_100cc 	= read_be_uint32(buffer);
-	fld->prob_150cc 	= read_be_uint32(buffer);
-	fld->wiimmfi_region 	= read_be_uint32(buffer);
-	fld->track_blocking 	= read_be_uint32(buffer);
+	fld->room_key 		= read_be_uint32(buffer, offset);
+	fld->prob_100cc 	= read_be_uint32(buffer, offset);
+	fld->prob_150cc 	= read_be_uint32(buffer, offset);
+	fld->wiimmfi_region 	= read_be_uint32(buffer, offset);
+	fld->track_blocking 	= read_be_uint32(buffer, offset);
 
-	fld->tt_trophies 	= read_byte(buffer);
-	fld->enable_200cc 	= read_byte(buffer);
-	fld->umts 		= read_byte(buffer);
-	fld->feather 		= read_byte(buffer);
-	fld->mega_tc 		= read_byte(buffer);
-	fld->n_cup_icons 	= read_be_uint16(buffer);
-	fld->track_timer 	= read_byte(buffer);
-	read_bytes(buffer, fld->padding, 40);
+	fld->tt_trophies 	= read_byte(buffer, offset);
+	fld->enable_200cc 	= read_byte(buffer, offset);
+	fld->umts 		= read_byte(buffer, offset);
+	fld->feather 		= read_byte(buffer, offset);
+	fld->mega_tc 		= read_byte(buffer, offset);
+	fld->n_cup_icons 	= read_be_uint16(buffer, offset);
+	fld->track_timer 	= read_byte(buffer, offset);
+	read_bytes(buffer, offset, fld->padding, 40);
 }
 
-static void _read_cups_header(struct cups_header *hdr, uint8_t **buffer) {
-	hdr->magic = read_be_uint32(buffer);
+static void _read_cups_header(struct cups_header *hdr, const uint8_t *buffer, int *offset) {
+	hdr->magic = read_be_uint32(buffer, offset);
 
 	if (hdr->magic != CUPS_MAGIC) {
 		fprintf(stderr, "Invalid data: CUPS\n");
 		return;
 	}
 
-	hdr->version 		= read_be_uint32(buffer);
-	hdr->size 		= read_be_uint32(buffer);
-	hdr->n_ct_cups 		= read_be_uint16(buffer);
-	hdr->nin_track_mode 	= read_byte(buffer);
-	hdr->padding 		= read_byte(buffer);
+	hdr->version 		= read_be_uint32(buffer, offset);
+	hdr->size 		= read_be_uint32(buffer, offset);
+	hdr->n_ct_cups 		= read_be_uint16(buffer, offset);
+	hdr->nin_track_mode 	= read_byte(buffer, offset);
+	hdr->padding 		= read_byte(buffer, offset);
 
 	// u16[4]
-	hdr->n_trophies[0] = read_be_uint16(buffer);
-	hdr->n_trophies[1] = read_be_uint16(buffer);
-	hdr->n_trophies[2] = read_be_uint16(buffer);
-	hdr->n_trophies[3] = read_be_uint16(buffer);
+	hdr->n_trophies[0] = read_be_uint16(buffer, offset);
+	hdr->n_trophies[1] = read_be_uint16(buffer, offset);
+	hdr->n_trophies[2] = read_be_uint16(buffer, offset);
+	hdr->n_trophies[3] = read_be_uint16(buffer, offset);
 
-	hdr->n_variants = read_be_uint32(buffer);
+	hdr->n_variants = read_be_uint32(buffer, offset);
 }
 
-static void _read_track_entry(struct track_entry *track, uint8_t **buffer) {
-	track->track_slot 	= read_byte(buffer);
-	track->music_slot 	= read_byte(buffer);
-	track->n_variants 	= read_be_uint16(buffer);
-	track->crc32 		= read_be_uint32(buffer);
+static void _read_track_entry(struct track_entry *track, const uint8_t *buffer, int *offset) {
+	track->track_slot 	= read_byte(buffer, offset);
+	track->music_slot 	= read_byte(buffer, offset);
+	track->n_variants 	= read_be_uint16(buffer, offset);
+	track->crc32 		= read_be_uint32(buffer, offset);
 }
 
-void read_file(struct pul_file *file, uint8_t **buffer) {
-	_read_file_header(&file->f_hdr, buffer);
-	_read_file_info(&file->i_hdr, &file->i_fld, buffer);
-	_read_cups_header(&file->c_hdr, buffer);
+void read_file(struct pul_file *file, const uint8_t *buffer, int *offset) {
+	_read_file_header(&file->f_hdr, buffer, offset);
+	_read_file_info(&file->i_hdr, &file->i_fld, buffer, offset);
+	_read_cups_header(&file->c_hdr, buffer, offset);
 
 	int n_cups = file->c_hdr.n_ct_cups;
 	int n_tracks = 4 * (n_cups + (n_cups % 2));
 
 	file->t_arr = (struct track_entry*)malloc(sizeof(struct track_entry) * n_tracks);
 	for (int i = 0; i < n_tracks; ++i) {
-		_read_track_entry(&file->t_arr[i], buffer);
+		_read_track_entry(&file->t_arr[i], buffer, offset);
 	}
 
 	file->alphabet_table = (uint16_t*)malloc(sizeof(uint16_t) * n_tracks);
 	for (int i = 0; i < n_tracks; ++i) {
-		file->alphabet_table[i] = read_be_uint16(buffer);
+		file->alphabet_table[i] = read_be_uint16(buffer, offset);
 	}
 }
 
@@ -158,4 +158,25 @@ void print_file(const struct pul_file file) {
 	for (int i = 0; i < n_tracks; ++i) {
 		printf("%d\n", file.alphabet_table[i]);
 	}
+}
+
+void export_bmg(const struct pul_file file, const uint8_t *buffer) {
+	int start = file.f_hdr.bmg_offset;
+	int offset = start;
+	
+	if (read_be_uint32(buffer, &offset) != BMG_MAGIC_1) {
+		fprintf(stderr, "BMG magic invalid\n");
+		return;
+	}
+
+	if (read_be_uint32(buffer, &offset) != BMG_MAGIC_2) {
+		fprintf(stderr, "BMG magic invalid\n");
+		return;
+	}
+
+	size_t f_size = read_be_uint32(buffer, &offset);	
+
+	FILE *fp = fopen("./config.bmg", "wb");
+	fwrite(&buffer[start], 1, f_size, fp);
+	fclose(fp);
 }

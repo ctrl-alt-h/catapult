@@ -7,6 +7,9 @@
 #define INFO_MAGIC 0x494E464F
 #define CUPS_MAGIC 0x43555053
 
+#define BMG_MAGIC_1 0x4D455347
+#define BMG_MAGIC_2 0x626D6731
+
 #define MOD_NAME_MAX 16
 
 struct file_header {
@@ -67,7 +70,8 @@ struct pul_file {
 	uint16_t *alphabet_table;
 };
 
-void read_file(struct pul_file *file, uint8_t **buffer);
+void read_file(struct pul_file *file, const uint8_t *buffer, int *offset);
 void print_file(const struct pul_file file);
+void export_bmg(const struct pul_file file, const uint8_t *buffer);
 
 #endif
