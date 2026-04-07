@@ -1,5 +1,5 @@
 CC = cc
-CFLAGS = -Wall -Wextra
+CFLAGS = -Wall -Wextra -DCRC32_FAST
 
 BUILD = build
 SOURCES = src/main.c\
@@ -8,10 +8,10 @@ SOURCES = src/main.c\
 	  src/crc32.c
 
 release:
-	$(CC) $(CFLAGS) $(SOURCES) -DCRC32_FAST -o $(BUILD)/catapult
+	$(CC) $(CFLAGS) $(SOURCES) -o $(BUILD)/catapult
 
 debug:
-	$(CC) $(CFLAGS) -g -DDEBUG -DCRC32_FAST $(SOURCES) -o $(BUILD)/catapult
+	$(CC) $(CFLAGS) -g -DDEBUG $(SOURCES) -o $(BUILD)/catapult
 
 test:
 	cd tests && ./test1.sh
