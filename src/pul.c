@@ -157,12 +157,14 @@ void print_track_entries(const struct pul_file file) {
 		_print_track_entry(file.t_arr[i], i);
 	}
 
+#ifdef DEBUG
 	for (int i = 0; i < n_tracks; ++i) {
 		printf("%d\n", file.alphabet_table[i]);
 	}
+#endif
 }
 
-void export_bmg(const struct pul_file file, const uint8_t *buffer) {
+void export_bmg(const struct pul_file file, const uint8_t *buffer, const char *path) {
 	int start = file.f_hdr.bmg_offset;
 	int offset = start;
 	
@@ -178,12 +180,12 @@ void export_bmg(const struct pul_file file, const uint8_t *buffer) {
 
 	size_t f_size = read_be_uint32(buffer, &offset);
 
-	FILE *fp = fopen("./config.bmg", "wb");
+	FILE *fp = fopen(path, "wb");
 	fwrite(&buffer[start], 1, f_size, fp);
 	fclose(fp);
 }
 
-void export_txt(const struct pul_file file, const uint8_t *buffer, const size_t size) {
+void export_txt(const struct pul_file file, const uint8_t *buffer, const size_t size, const char *path) {
 	int start = file.f_hdr.bmg_offset;
 	int offset = start;
 
@@ -206,10 +208,10 @@ void export_txt(const struct pul_file file, const uint8_t *buffer, const size_t 
 	}
 
 	offset = start + f_size;
-	FILE *fp = fopen("./filenames.txt", "wb");
+	FILE *fp = fopen(path, "wb");
 	fwrite(&buffer[offset], 1, size - offset, fp);
 	fclose(fp);
 }
 
-void write_file(const struct pul_file file, const char *filename) {
+void write_file(const struct pul_file src, const char *dst_file, const char *bmg_file, const char *txt_file) {
 }

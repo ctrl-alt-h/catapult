@@ -3,32 +3,6 @@
 #include <stdlib.h>
 #include "binary.h"
 
-size_t buffer_from_file(uint8_t **buffer, const char *filename) {
-	FILE *fp = NULL;
-	size_t f_size = 0;
-
-	fp = fopen(filename, "rb");
-	fseek(fp, 0, SEEK_END);
-	f_size = ftell(fp);
-	fseek(fp, 0, SEEK_SET);
-
-	*buffer = (uint8_t*)malloc(sizeof(uint8_t) * f_size);
-	if (*buffer == NULL) {
-		fprintf(stderr, "Error allocating buffer mem\n");
-		fclose(fp);
-		return 0;
-	}
-
-	if (fread(*buffer, 1, f_size, fp) != f_size) {
-		fprintf(stderr, "Read inconsistent bytes. Something is wrong.\n");
-		fclose(fp);
-		return 0;
-	}
-
-	fclose(fp);
-	return f_size;
-}
-
 uint8_t read_byte(const uint8_t *src, int *offset) {
 	return src[(*offset)++];
 }
@@ -77,4 +51,30 @@ uint32_t crc32_from_file(const char *filename) {
 	free(buffer);
 	fclose(file);
 	return result;
+}
+
+size_t buffer_from_file(uint8_t **buffer, const char *filename) {
+	FILE *fp = NULL;
+	size_t f_size = 0;
+
+	fp = fopen(filename, "rb");
+	fseek(fp, 0, SEEK_END);
+	f_size = ftell(fp);
+	fseek(fp, 0, SEEK_SET);
+
+	*buffer = (uint8_t*)malloc(sizeof(uint8_t) * f_size);
+	if (*buffer == NULL) {
+		fprintf(stderr, "Error allocating buffer mem\n");
+		fclose(fp);
+		return 0;
+	}
+
+	if (fread(*buffer, 1, f_size, fp) != f_size) {
+		fprintf(stderr, "Read inconsistent bytes. Something is wrong.\n");
+		fclose(fp);
+		return 0;
+	}
+
+	fclose(fp);
+	return f_size;
 }
