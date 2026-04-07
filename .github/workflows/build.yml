@@ -17,5 +17,5 @@ jobs:
       run: make config
     - name: make
       run: make
-    - name: make check
+    - name: make test
       run: make test
