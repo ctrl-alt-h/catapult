@@ -24,6 +24,22 @@ uint32_t read_be_uint32(const uint8_t *src, int *offset) {
 	       read_byte(src, offset);
 }
 
+void write_byte(FILE *stream, uint8_t x) {
+	fwrite(&x, sizeof(uint8_t), 1, stream);
+}
+
+void write_be_uint16(FILE *stream, uint16_t x) {
+	write_byte(stream, (uint8_t)(x >> 8));
+	write_byte(stream, (uint8_t)x);
+}
+
+void write_be_uint32(FILE *stream, uint32_t x) {
+	write_byte(stream, (uint8_t)(x >> 24));
+	write_byte(stream, (uint8_t)(x >> 16));
+	write_byte(stream, (uint8_t)(x >> 8));
+	write_byte(stream, (uint8_t)x);
+}
+
 uint32_t crc32_from_file(const char *filename) {
 	FILE *file;
 	size_t size;

@@ -20,14 +20,13 @@ int main(int argc, char **argv) {
 	int 	offset = 0;
 
 	read_file(&file, buffer, &offset);
-	export_bmg(file, buffer, "./out.bmg");
-	export_txt(file, buffer, f_size, "./out.txt");
+	export_bmg(file, buffer, "./output.bmg");
+	export_txt(file, buffer, f_size, "./output.txt");
 
 	free(buffer);
 
 	print_file(file);
-
-	// hello
+	write_file(file, "./output.pul", "./output.bmg", "./output.txt");
 #endif
 
 	return 0;
