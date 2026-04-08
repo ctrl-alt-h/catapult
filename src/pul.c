@@ -157,9 +157,11 @@ void print_track_entries(const struct pul_file file) {
 		_print_track_entry(file.t_arr[i], i);
 	}
 
+#ifdef DEBUG
 	for (int i = 0; i < n_tracks; ++i) {
 		printf("%d\n", file.alphabet_table[i]);
 	}
+#endif
 }
 
 void export_bmg(const struct pul_file file, const uint8_t *buffer, const char *path) {
