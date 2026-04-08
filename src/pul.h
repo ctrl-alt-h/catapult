@@ -71,12 +71,12 @@ struct pul_file {
 };
 
 void read_file(struct pul_file *file, const uint8_t *buffer, int *offset);
-void write_file(const struct pul_file file, const char *filename);
+void write_file(const struct pul_file file, const char *filename, const char *bmg_path, const char *txt_path);
 
 void print_file(const struct pul_file file);
 void print_track_entries(const struct pul_file file);
 
-void export_bmg(const struct pul_file file, const uint8_t *buffer);
-void export_txt(const struct pul_file file, const uint8_t *buffer, const size_t size);
+void export_bmg(const struct pul_file file, const uint8_t *buffer, const char *path);
+void export_txt(const struct pul_file file, const uint8_t *buffer, const size_t size, const char *path);
 
 #endif

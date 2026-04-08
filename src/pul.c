@@ -162,7 +162,7 @@ void print_track_entries(const struct pul_file file) {
 	}
 }
 
-void export_bmg(const struct pul_file file, const uint8_t *buffer) {
+void export_bmg(const struct pul_file file, const uint8_t *buffer, const char *path) {
 	int start = file.f_hdr.bmg_offset;
 	int offset = start;
 	
@@ -178,12 +178,12 @@ void export_bmg(const struct pul_file file, const uint8_t *buffer) {
 
 	size_t f_size = read_be_uint32(buffer, &offset);
 
-	FILE *fp = fopen("./config.bmg", "wb");
+	FILE *fp = fopen(path, "wb");
 	fwrite(&buffer[start], 1, f_size, fp);
 	fclose(fp);
 }
 
-void export_txt(const struct pul_file file, const uint8_t *buffer, const size_t size) {
+void export_txt(const struct pul_file file, const uint8_t *buffer, const size_t size, const char *path) {
 	int start = file.f_hdr.bmg_offset;
 	int offset = start;
 
@@ -206,10 +206,90 @@ void export_txt(const struct pul_file file, const uint8_t *buffer, const size_t 
 	}
 
 	offset = start + f_size;
-	FILE *fp = fopen("./filenames.txt", "wb");
+	FILE *fp = fopen(path, "wb");
 	fwrite(&buffer[offset], 1, size - offset, fp);
 	fclose(fp);
 }
 
-void write_file(const struct pul_file file, const char *filename) {
+static void _write_file_header(FILE *stream, const struct file_header f_hdr) {
+	write_be_uint32(stream, f_hdr.magic);
+	write_be_uint32(stream, f_hdr.version);
+	write_be_uint32(stream, f_hdr.info_offset);
+	write_be_uint32(stream, f_hdr.cups_offset);
+	write_be_uint32(stream, f_hdr.bmg_offset);
+
+	fwrite(f_hdr.mod_folder_name, sizeof(char), MOD_NAME_MAX, stream);
+}
+
+static void _write_info(FILE *stream, const struct info_header i_hdr, const struct info_fields i_fld) {
+	write_be_uint32(stream, i_hdr.magic);
+	write_be_uint32(stream, i_hdr.version);
+	write_be_uint32(stream, i_hdr.size);
+
+	write_be_uint32(stream, i_fld.room_key);
+	write_be_uint32(stream, i_fld.prob_100cc);
+	write_be_uint32(stream, i_fld.prob_150cc);
+	write_be_uint32(stream, i_fld.wiimmfi_region);
+	write_be_uint32(stream, i_fld.track_blocking);
+	write_byte(stream, i_fld.tt_trophies);
+	write_byte(stream, i_fld.enable_200cc);
+	write_byte(stream, i_fld.umts);
+	write_byte(stream, i_fld.feather);
+	write_byte(stream, i_fld.mega_tc);
+	write_be_uint16(stream, i_fld.n_cup_icons);
+	write_byte(stream, i_fld.track_timer);
+
+	fwrite(i_fld.padding, sizeof(uint8_t), 40, stream);
+}
+
+static void _write_cups(FILE *stream, const struct cups_header c_hdr) {
+	write_be_uint32(stream, c_hdr.magic);
+	write_be_uint32(stream, c_hdr.version);
+	write_be_uint32(stream, c_hdr.size);
+	write_be_uint16(stream, c_hdr.n_ct_cups);
+	write_byte(stream, c_hdr.nin_track_mode);
+	write_byte(stream, c_hdr.padding);
+	write_be_uint16(stream, c_hdr.n_trophies[0]);
+	write_be_uint16(stream, c_hdr.n_trophies[1]);
+	write_be_uint16(stream, c_hdr.n_trophies[2]);
+	write_be_uint16(stream, c_hdr.n_trophies[3]);
+	write_be_uint32(stream, c_hdr.n_variants);
+}
+
+static void _write_track_entry(FILE *stream, const struct track_entry track) {
+	write_byte(stream, track.track_slot);
+	write_byte(stream, track.music_slot);
+	write_be_uint16(stream, track.n_variants);
+	write_be_uint32(stream, track.crc32);
+}
+
+void write_file(const struct pul_file file, const char *filename, const char *bmg_path, const char *txt_path) {
+	FILE *of = fopen(filename, "wb");
+
+	_write_file_header(of, file.f_hdr);
+	_write_info(of, file.i_hdr, file.i_fld);
+	_write_cups(of, file.c_hdr);
+
+	int n_cups = file.c_hdr.n_ct_cups;
+	int n_tracks = 4 * (n_cups + (n_cups % 2));
+
+	for (int i = 0; i < n_tracks; ++i) {
+		_write_track_entry(of, file.t_arr[i]);
+	}
+
+	for (int i = 0; i < n_tracks; ++i) {
+		write_be_uint16(of, file.alphabet_table[i]);
+	}
+
+	uint8_t *bmg_buff = NULL;
+	size_t bmg_size = buffer_from_file(&bmg_buff, bmg_path);
+	fwrite(bmg_buff, sizeof(uint8_t), bmg_size, of);
+	free(bmg_buff);
+
+	uint8_t *txt_buff = NULL;
+	size_t txt_size = buffer_from_file(&txt_buff, txt_path);
+	fwrite(txt_buff, sizeof(uint8_t), txt_size, of);
+	free(txt_buff);
+
+	fclose(of);
 }
