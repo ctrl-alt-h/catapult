@@ -75,6 +75,7 @@ void write_file(const struct pul_file file, const char *filename, const char *bm
 
 void print_file(const struct pul_file file);
 void print_track_entries(const struct pul_file file);
+void print_alphabet_table(const struct pul_file file);
 
 void export_bmg(const struct pul_file file, const uint8_t *buffer, const char *path);
 void export_txt(const struct pul_file file, const uint8_t *buffer, const size_t size, const char *path);

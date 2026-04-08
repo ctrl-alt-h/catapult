@@ -156,12 +156,25 @@ void print_track_entries(const struct pul_file file) {
 	for (int i = 0; i < n_tracks; ++i) {
 		_print_track_entry(file.t_arr[i], i);
 	}
+}
 
-#ifdef DEBUG
+void print_alphabet_table(const struct pul_file file) {
+	int n_cups = file.c_hdr.n_ct_cups;
+	int n_tracks = 4 * (n_cups + (n_cups % 2));
+
+	int num_per_line = 10;
+
+	printf("ALPHABET INDEX TABLE\n");
+	printf("---------------------\n");
 	for (int i = 0; i < n_tracks; ++i) {
-		printf("%d\n", file.alphabet_table[i]);
+		int nl = '\t';
+		if ((i + 1) % num_per_line == 0) {
+			nl = '\n';
+		}
+
+		printf("%d%c", file.alphabet_table[i], nl);
 	}
-#endif
+	printf("\n\n");
 }
 
 void export_bmg(const struct pul_file file, const uint8_t *buffer, const char *path) {

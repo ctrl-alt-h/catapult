@@ -74,6 +74,11 @@ size_t buffer_from_file(uint8_t **buffer, const char *filename) {
 	size_t f_size = 0;
 
 	fp = fopen(filename, "rb");
+	if (fp == NULL) {
+		fprintf(stderr, "Cannot find file: %s\n", filename);
+		return 0;
+	}
+
 	fseek(fp, 0, SEEK_END);
 	f_size = ftell(fp);
 	fseek(fp, 0, SEEK_SET);
