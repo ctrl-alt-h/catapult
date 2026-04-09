@@ -2,7 +2,7 @@ CC = cc
 CFLAGS = -Wall -Wextra -DCRC32_FAST
 
 BUILD = build
-SOURCES = src/main.c\
+SOURCES = src/catapult.c\
 	  src/pul.c\
 	  src/binary.c\
 	  src/crc32.c

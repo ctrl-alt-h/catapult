@@ -14,6 +14,35 @@ struct app_state {
 	int show_alphabet_table; // boolean
 };
 
+//-----------------------//
+//----- CAT COMMAND -----//
+//-----------------------//
+
+void command_cat(struct app_state state, const char *filename) {
+	uint8_t *buffer = NULL;
+	size_t f_size = buffer_from_file(&buffer, filename);
+	if (f_size <= 0) {
+		return;
+	}
+
+	int offset = 0;
+	struct pul_file pf;
+	read_file(&pf, buffer, &offset);
+	free(buffer);
+
+	print_file(pf);
+
+	if (state.show_tracks) {
+		print_track_entries(pf);
+	}
+
+	if (state.show_alphabet_table) {
+		print_alphabet_table(pf);
+	}
+}
+
+//----------------------------------------------------//
+
 void handle_cat(int argc, char **argv, struct app_state state) {
 	if (argc < 3) {
 		fprintf(stderr, "Usage: catapult CAT /path/to/Config.pul [options]...\n");
@@ -43,27 +72,12 @@ void handle_cat(int argc, char **argv, struct app_state state) {
 		}
 	}
 
-	uint8_t *buffer = NULL;
-	size_t f_size = buffer_from_file(&buffer, file);
-	if (f_size <= 0) {
-		return;
-	}
-
-	int offset = 0;
-	struct pul_file pf;
-	read_file(&pf, buffer, &offset);
-	free(buffer);
-
-	print_file(pf);
-
-	if (state.show_tracks) {
-		print_track_entries(pf);
-	}
-
-	if (state.show_alphabet_table) {
-		print_alphabet_table(pf);
-	}
+	command_cat(state, file);
 }
+
+//-----------------------//
+//----- Entry Point -----//
+//-----------------------//
 
 int main(int argc, char **argv) {
 	if (argc < 2) {
