@@ -4,6 +4,10 @@
 #include "pul.h"
 #include "binary.h"
 
+//================------------------------------================//
+//=====----------------- Read PUL File --------------------=====//
+//================------------------------------================//
+
 static void _read_file_header(struct file_header *hdr, const uint8_t *buffer, int *offset) {
 	hdr->magic 		= read_be_uint32(buffer, offset);
 
@@ -18,6 +22,8 @@ static void _read_file_header(struct file_header *hdr, const uint8_t *buffer, in
 	hdr->bmg_offset 	= read_be_uint32(buffer, offset);
 	read_bytes(buffer, offset, (uint8_t*)hdr->mod_folder_name, MOD_NAME_MAX);
 }
+
+//-----------------------------------------------------------------------//
 
 static void _read_file_info(struct info_header *hdr, struct info_fields *fld, const uint8_t *buffer, int *offset) {
 	hdr->magic = read_be_uint32(buffer, offset);
@@ -46,6 +52,8 @@ static void _read_file_info(struct info_header *hdr, struct info_fields *fld, co
 	read_bytes(buffer, offset, fld->padding, 40);
 }
 
+//-----------------------------------------------------------------------//
+
 static void _read_cups_header(struct cups_header *hdr, const uint8_t *buffer, int *offset) {
 	hdr->magic = read_be_uint32(buffer, offset);
 
@@ -69,12 +77,16 @@ static void _read_cups_header(struct cups_header *hdr, const uint8_t *buffer, in
 	hdr->n_variants = read_be_uint32(buffer, offset);
 }
 
+//-----------------------------------------------------------------------//
+
 static void _read_track_entry(struct track_entry *track, const uint8_t *buffer, int *offset) {
 	track->track_slot 	= read_byte(buffer, offset);
 	track->music_slot 	= read_byte(buffer, offset);
 	track->n_variants 	= read_be_uint16(buffer, offset);
 	track->crc32 		= read_be_uint32(buffer, offset);
 }
+
+//----------------------- main file structure --------------------------//
 
 void read_file(struct pul_file *file, const uint8_t *buffer, int *offset) {
 	_read_file_header(&file->f_hdr, buffer, offset);
@@ -95,6 +107,10 @@ void read_file(struct pul_file *file, const uint8_t *buffer, int *offset) {
 	}
 }
 
+//================-------------------------================//
+//=====----------------- Printing --------------------=====//
+//================-------------------------================//
+
 static void _print_track_entry(const struct track_entry track, const int index) {
 	printf("TRACK ENTRY %d\n", index);
 	printf("------------\n");
@@ -103,6 +119,8 @@ static void _print_track_entry(const struct track_entry track, const int index) 
 	printf("Variant count:\t%d\n", track.n_variants);
 	printf("CRC32:\t\t%u\n\n", track.crc32);
 }
+
+//-----------------------------------------------------------------------//
 
 void print_file(const struct pul_file file) {
 	printf("FILE HEADER\n");
@@ -149,6 +167,8 @@ void print_file(const struct pul_file file) {
 	printf("Variant count:\t%d\n\n", file.c_hdr.n_variants);
 }
 
+//-----------------------------------------------------------------------//
+
 void print_track_entries(const struct pul_file file) {
 	int n_cups = file.c_hdr.n_ct_cups;
 	int n_tracks = 4 * (n_cups + (n_cups % 2));
@@ -156,13 +176,32 @@ void print_track_entries(const struct pul_file file) {
 	for (int i = 0; i < n_tracks; ++i) {
 		_print_track_entry(file.t_arr[i], i);
 	}
-
-#ifdef DEBUG
-	for (int i = 0; i < n_tracks; ++i) {
-		printf("%d\n", file.alphabet_table[i]);
-	}
-#endif
 }
+
+//-----------------------------------------------------------------------//
+
+void print_alphabet_table(const struct pul_file file) {
+	int n_cups = file.c_hdr.n_ct_cups;
+	int n_tracks = 4 * (n_cups + (n_cups % 2));
+
+	int num_per_line = 10;
+
+	printf("ALPHABET INDEX TABLE\n");
+	printf("---------------------\n");
+	for (int i = 0; i < n_tracks; ++i) {
+		int nl = '\t';
+		if ((i + 1) % num_per_line == 0) {
+			nl = '\n';
+		}
+
+		printf("%d%c", file.alphabet_table[i], nl);
+	}
+	printf("\n\n");
+}
+
+//================---------------------------------================//
+//=====----------------- Export Sub-files --------------------=====//
+//================---------------------------------================//
 
 void export_bmg(const struct pul_file file, const uint8_t *buffer, const char *path) {
 	int start = file.f_hdr.bmg_offset;
@@ -184,6 +223,8 @@ void export_bmg(const struct pul_file file, const uint8_t *buffer, const char *p
 	fwrite(&buffer[start], 1, f_size, fp);
 	fclose(fp);
 }
+
+//-----------------------------------------------------------------------//
 
 void export_txt(const struct pul_file file, const uint8_t *buffer, const size_t size, const char *path) {
 	int start = file.f_hdr.bmg_offset;
@@ -213,6 +254,10 @@ void export_txt(const struct pul_file file, const uint8_t *buffer, const size_t 
 	fclose(fp);
 }
 
+//================-------------------------------================//
+//=====----------------- Write PUL File --------------------=====//
+//================-------------------------------================//
+
 static void _write_file_header(FILE *stream, const struct file_header f_hdr) {
 	write_be_uint32(stream, f_hdr.magic);
 	write_be_uint32(stream, f_hdr.version);
@@ -222,6 +267,8 @@ static void _write_file_header(FILE *stream, const struct file_header f_hdr) {
 
 	fwrite(f_hdr.mod_folder_name, sizeof(char), MOD_NAME_MAX, stream);
 }
+
+//-----------------------------------------------------------------------//
 
 static void _write_info(FILE *stream, const struct info_header i_hdr, const struct info_fields i_fld) {
 	write_be_uint32(stream, i_hdr.magic);
@@ -244,6 +291,8 @@ static void _write_info(FILE *stream, const struct info_header i_hdr, const stru
 	fwrite(i_fld.padding, sizeof(uint8_t), 40, stream);
 }
 
+//-----------------------------------------------------------------------//
+
 static void _write_cups(FILE *stream, const struct cups_header c_hdr) {
 	write_be_uint32(stream, c_hdr.magic);
 	write_be_uint32(stream, c_hdr.version);
@@ -258,12 +307,16 @@ static void _write_cups(FILE *stream, const struct cups_header c_hdr) {
 	write_be_uint32(stream, c_hdr.n_variants);
 }
 
+//-----------------------------------------------------------------------//
+
 static void _write_track_entry(FILE *stream, const struct track_entry track) {
 	write_byte(stream, track.track_slot);
 	write_byte(stream, track.music_slot);
 	write_be_uint16(stream, track.n_variants);
 	write_be_uint32(stream, track.crc32);
 }
+
+//-----------------------------------------------------------------------//
 
 void write_file(const struct pul_file file, const char *filename, const char *bmg_path, const char *txt_path) {
 	FILE *of = fopen(filename, "wb");

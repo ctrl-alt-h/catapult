@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include "binary.h"
 
+//--------------------------//
+//----- Binary Reading -----//
+//--------------------------//
+
 uint8_t read_byte(const uint8_t *src, int *offset) {
 	return src[(*offset)++];
 }
@@ -24,6 +28,10 @@ uint32_t read_be_uint32(const uint8_t *src, int *offset) {
 	       read_byte(src, offset);
 }
 
+//--------------------------//
+//----- Binary Writing -----//
+//--------------------------//
+
 void write_byte(FILE *stream, uint8_t x) {
 	fwrite(&x, sizeof(uint8_t), 1, stream);
 }
@@ -39,6 +47,10 @@ void write_be_uint32(FILE *stream, uint32_t x) {
 	write_byte(stream, (uint8_t)(x >> 8));
 	write_byte(stream, (uint8_t)x);
 }
+
+//--------------------//
+//----- Checksum -----//
+//--------------------//
 
 uint32_t crc32_from_file(const char *filename) {
 	FILE *file;
@@ -69,11 +81,20 @@ uint32_t crc32_from_file(const char *filename) {
 	return result;
 }
 
+//-----------------------//
+//----- File Buffer -----//
+//-----------------------//
+
 size_t buffer_from_file(uint8_t **buffer, const char *filename) {
 	FILE *fp = NULL;
 	size_t f_size = 0;
 
 	fp = fopen(filename, "rb");
+	if (fp == NULL) {
+		fprintf(stderr, "Cannot find file: %s\n", filename);
+		return 0;
+	}
+
 	fseek(fp, 0, SEEK_END);
 	f_size = ftell(fp);
 	fseek(fp, 0, SEEK_SET);
