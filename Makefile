@@ -1,20 +1,16 @@
 CC = cc
 CFLAGS = -Wall -Wextra -DCRC32_FAST
-
-BUILD = build
-SOURCES = src/catapult.c\
-	  src/pul.c\
-	  src/binary.c\
-	  src/crc32.c
+BUILD = ./build
 
 release:
-	$(CC) $(CFLAGS) $(SOURCES) -o $(BUILD)/catapult
+	cd $(BUILD) && \
+	cmake .. && \
+	cmake --build .
 
 debug:
-	$(CC) $(CFLAGS) -g -DDEBUG $(SOURCES) -o $(BUILD)/catapult
-
-test:
-	cd tests && ./test1.sh
+	cd $(BUILD) && \
+	cmake -DCMAKE_BUILD_TYPE=Debug .. && \
+	cmake --build .
 
 config:
 	mkdir -p $(BUILD)
