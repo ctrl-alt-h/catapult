@@ -55,7 +55,7 @@ void write_be_uint32(FILE *stream, uint32_t x) {
 uint32_t crc32_from_file(const char *filename) {
 	FILE *file;
 	size_t size;
-	unsigned char *buffer;
+	unsigned char *buffer = NULL;
 	unsigned int result;
 
 	file = fopen(filename, "rb");
@@ -64,6 +64,7 @@ uint32_t crc32_from_file(const char *filename) {
 		return 0;
 	}
 
+#ifdef CHECKSUM_BUFFER
 	fseek(file, 0, SEEK_END);
 	size = ftell(file);
 	fseek(file, 0, SEEK_SET);
@@ -73,6 +74,9 @@ uint32_t crc32_from_file(const char *filename) {
 		fprintf(stderr, "Failed to read file in the crc32 function\n");
 		return 0;
 	}
+#else
+    size = buffer_from_file(&buffer, filename);
+#endif
 
 	result = crc32(buffer, (unsigned int)size);
 	

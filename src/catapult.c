@@ -14,6 +14,29 @@ struct app_state {
 	int show_alphabet_table; // boolean
 };
 
+//----------------------------//
+//----- CHECKSUM COMMAND -----//
+//----------------------------//
+
+void command_checksum(const char *file) {
+    uint32_t checksum = crc32_from_file(file);
+    printf("Generated Checksum\n");
+    printf("-------------------\n");
+    printf("CRC32: %u\n\n", checksum);
+}
+
+//----------------------------------------------------//
+
+void handle_checksum(int argc, char **argv) {
+	if (argc < 3) {
+		fprintf(stderr, "Usage: catapult CHECKSUM <file>\n");
+		return;
+	}
+
+    char *file = argv[2];
+    command_checksum(file);
+}
+
 //-----------------------//
 //----- CAT COMMAND -----//
 //-----------------------//
@@ -87,7 +110,7 @@ int main(int argc, char **argv) {
 
 	char *command = argv[1];
 	struct app_state state = {
-		.show_tracks 		= PUL_FALSE,
+		.show_tracks 		    = PUL_FALSE,
 		.show_alphabet_table 	= PUL_FALSE,
 	};
 
@@ -97,7 +120,9 @@ int main(int argc, char **argv) {
 
 	if (strncmp(command, "CAT", 3) == 0) {
 		handle_cat(argc, argv, state);
-	}
+	} else if (strncmp(command, "CHECKSUM", 8) == 0) {
+        handle_checksum(argc, argv);
+    }
 
 	return 0;
 }
