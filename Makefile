@@ -17,7 +17,7 @@ test:
 	cd tests && ./test1.sh
 
 config:
-	mkdir $(BUILD)
+	mkdir -p $(BUILD)
 
 clean:
 	rm -rf $(BUILD)/*
