@@ -14,6 +14,21 @@ struct app_state {
 	int show_alphabet_table; // boolean
 };
 
+void print_logo() {
+    printf("                     __                                    __    __     \n");
+    printf("                    |  \\                                  |  \\  |  \\    \n");
+    printf("  _______  ______  _| $$_     ______    ______   __    __ | $$ _| $$_   \n");
+    printf(" /       \\|      \\|   $$ \\   |      \\  /      \\ |  \\  |  \\| $$|   $$ \\  \n");
+    printf("|  $$$$$$$ \\$$$$$$\\\\$$$$$$    \\$$$$$$\\|  $$$$$$\\| $$  | $$| $$ \\$$$$$$  \n");
+    printf("| $$      /      $$ | $$ __  /      $$| $$  | $$| $$  | $$| $$  | $$ __ \n");
+    printf("| $$_____|  $$$$$$$ | $$|  \\|  $$$$$$$| $$__/ $$| $$__/ $$| $$  | $$|  \\ \n");
+    printf(" \\$$     \\\\$$    $$  \\$$  $$ \\$$    $$| $$    $$ \\$$    $$| $$   \\$$  $$\n");
+    printf("  \\$$$$$$$ \\$$$$$$$   \\$$$$   \\$$$$$$$| $$$$$$$   \\$$$$$$  \\$$    \\$$$$ \n");
+    printf("                                      | $$                              \n");
+    printf("                                      | $$                              \n");
+    printf("                                       \\$$                              \n\n");
+}
+
 //----------------------------//
 //----- CHECKSUM COMMAND -----//
 //----------------------------//
@@ -104,6 +119,7 @@ void handle_cat(int argc, char **argv, struct app_state state) {
 
 int main(int argc, char **argv) {
 	if (argc < 2) {
+        print_logo();
 		fprintf(stderr, "Usage: catapult <command> [options]...\n");
 		return 1;
 	}
