@@ -82,7 +82,7 @@ void handle_cat(int argc, char **argv, struct app_state state) {
 	};
 
 	int opt;
-	while ((opt = getopt_long(argc, argv, "", long_options, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "ta", long_options, NULL)) != -1) {
 		switch (opt) {
 			case 't':
 				state.show_tracks = PUL_TRUE;
@@ -91,7 +91,7 @@ void handle_cat(int argc, char **argv, struct app_state state) {
 				state.show_alphabet_table = PUL_TRUE;
 				break;
 			default:
-				abort();
+                return;
 		}
 	}
 
