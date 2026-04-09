@@ -4,9 +4,9 @@
 #include "pul.h"
 #include "binary.h"
 
-//-------------------------//
-//----- Read PUL File -----//
-//-------------------------//
+//================------------------------------================//
+//=====----------------- Read PUL File --------------------=====//
+//================------------------------------================//
 
 static void _read_file_header(struct file_header *hdr, const uint8_t *buffer, int *offset) {
 	hdr->magic 		= read_be_uint32(buffer, offset);
@@ -107,9 +107,9 @@ void read_file(struct pul_file *file, const uint8_t *buffer, int *offset) {
 	}
 }
 
-//--------------------//
-//----- Printing -----//
-//--------------------//
+//================-------------------------================//
+//=====----------------- Printing --------------------=====//
+//================-------------------------================//
 
 static void _print_track_entry(const struct track_entry track, const int index) {
 	printf("TRACK ENTRY %d\n", index);
@@ -199,9 +199,9 @@ void print_alphabet_table(const struct pul_file file) {
 	printf("\n\n");
 }
 
-//----------------------------//
-//----- Export Sub-files -----//
-//----------------------------//
+//================---------------------------------================//
+//=====----------------- Export Sub-files --------------------=====//
+//================---------------------------------================//
 
 void export_bmg(const struct pul_file file, const uint8_t *buffer, const char *path) {
 	int start = file.f_hdr.bmg_offset;
@@ -254,9 +254,9 @@ void export_txt(const struct pul_file file, const uint8_t *buffer, const size_t 
 	fclose(fp);
 }
 
-//--------------------------//
-//----- Write PUL File -----//
-//--------------------------//
+//================-------------------------------================//
+//=====----------------- Write PUL File --------------------=====//
+//================-------------------------------================//
 
 static void _write_file_header(FILE *stream, const struct file_header f_hdr) {
 	write_be_uint32(stream, f_hdr.magic);
