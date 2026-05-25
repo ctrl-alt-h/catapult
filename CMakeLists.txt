@@ -14,7 +14,7 @@ elseif(WIN32)
     list(APPEND SOURCES src/getopt/getopt.c)
     include_directories(src/getopt)
 endif()
-add_definitions(-DCRC32_FAST)
 
+add_definitions(-DCRC32_FAST)
 add_executable(catapult ${SOURCES})
 target_compile_definitions(catapult PRIVATE $<$<CONFIG:Debug>:DEBUG>)
